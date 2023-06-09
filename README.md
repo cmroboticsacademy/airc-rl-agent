@@ -174,147 +174,10 @@ When only inference, run below command, The script load VAE model and RL model a
 $ racer demo -robot jetbot
 ``` 
 
-#### Start Demo
+## Contribution
 
-```shell
-$ racer demo -robot sim -model <own trained model path> -vae <downloaded vae model path> -steps 1000 -device cpu -host <DonkeySim IP> -user <your own name>
-```
-
-* racer demo options
-
-|Name           | description            |Default                |
-|:--------------|:-----------------------|:----------------------|
-|-config(--config-path)| Specify the file path of config.yml.    | config.yml             |
-|-vae(--vae-path)| Specify the file path of the trained VAE model.    | vae.torch             |
-|-model(--model-path|Specify the file to load the trained reinforcement learning model.|model|
-|-device(--device)|Specifies whether Pytorch uses CUDA. Set 'cuda' to use. Set 'cpu' when using CPU.| cuda                 |
-|-robot(--robot-driver)| Specify the type of car to use. JetBot and JetRacer can be specified.| JetBot              |
-|-steps(--time-steps)| Specify the maximum step for demo. Modify the values ​​according to the size and complexity of the course.| 5000 |
-|-user(--sim-user)  |Define user name for own car that showed DonkeySim |anonymous|
-|-car(--sim-car)    | Define car model type for own car that showed DonkeySim|Donkey|
-
-## 5. Appendix
-
-### 5.1 Configuration
-
-You can configuration to some hyper parameter using config.yml.
-
-|Section          |Parameter              |Description               |
-|:----------------|:----------------------|:-------------------------|
-|SAC_SETTING      |LOG_INTERVAL           | [Reference to stable baselines document.](https://stable-baselines3.readthedocs.io/en/master/modules/sac.html)             |
-|^                |VERBOSE                | ^                        |
-|^                |LERNING_RATE           | ^                        |
-|^                |ENT_COEF               | ^                        |
-|^                |TRAIN_FREQ             | ^                        |
-|^                |BATCH_SIZE             | ^                        |
-|^                |GRADIENT_STEPS         | ^                        |
-|^                |LEARNING_STARTS        | ^                        |
-|^                |BUFFER_SIZE            | ^                        |
-|^                |GAMMA                  | ^                        |
-|^                |TAU                    | ^                        |
-|^                |USER_SDE               | ^                        |
-|^                |USER_SDE_AT_WARMUP     | ^                        |
-|^                |SDE_SAMPLE_FREQ        | ^                        |
-|^                |VARIANTS_SIZE          | Define size of VAE latent|
-|^                |IMAGE_CHANNELS         | Number of image channel. |
-|REWARD_SETTING   |REWARD_CRASH           | Define reward when crash.|
-|^                |CRASH_REWARD_WEIGHT    | Weight of crash reward.   |
-|^                |THROTTLE_REWARD_WEIGHT | Weight of reward for speed. |
-|AGENT_SETTING    |N_COMMAND_HISTORY      | Number of length command history as observation.|
-|^                |MIN_STEERING           | min value of agent steering.|
-|^                |MAX_STEERING           | max value of agent steering.|
-|^                |MIN_THROTTLE           | min value of agent throttle.|
-|^                |MAX_THROTTLE           | max value of agent throttle.|
-|^                |MAX_STEERING_DIFF      | max value of steering diff each steps.| 
-|JETRACER_SETTING |STEERING_CHANNEL       | Steering PWM pin number.|
-|^                |THROTTLE_CHANNEL       | Throttle PWM pin number.|
-|^                |STEERING_GAIN          | value of steering gain for NvidiaCar.|
-|^                |STEERING_OFFSET        | value of steering offset for NvidiaCar.|
-|^                |THROTTLE_GAIN          | value of throttle gain for NvidiaCar.|
-|^                |THROTTLE_OFFSET        | value of throttle offset for NvidiaCar.| 
-
-
-
-## 6. Release note
-
-* 2020/03/08 Alpha release
-    * First release.
-    
-* 2020/03/16 Alpha-0.0.1 release
-    * Fix import error at jetbot_data_collection.ipynb.
-
-* 2020/03/23 Beta release
-    * VAE Viewer can see latent space.
-    * Avoid stable_baseline source code change at install.
-    * train.py and demo.py merged to racer.py.
-    * Available without a game controller.
-    * Fix for can not copy dataset from google drive in CNN_VAE.ipynb
-
-* 2020/03/23 Beta-0.0.1 release
-    * Fix VAE_CNN.ipynb (bug #18).
-
-* 2020/04/26 v1.0.0 release
-    * Improvement install function.
-    * Can use DonkeySIM.
-    * YAML base configuration.
-    * Can use pre-trained model for SAC.
-    * Periodical saved model in each specific episode.
-
-* 2020/06/30 v1.0.5 release
-    * BugFix
-        * \#20 Recording twice action in a step
-        * \#22 Error occurs when run demo subcommand in real car.
-    * Jetson nano install script improvement.
-    
-* 2020/10/11 v1.5.0 release
-    * BugFix
-        * \#25 Change interface for latest gym_donkey
-    * Migration to stable_baseline3(All Pytorch implementation)
-    * Improvement notebook.
-        * user_interface.ipynb change UI.
-        * VAE_CNN.ipynb a little faster training.
-    * You can use TensorBoard for monitoring training.
-
-* 2021/01/09 v1.5.1 release
-    * BugFix
-        * \#32 Dose not working on Simulator environment.
-        * README.md update.
-
-* 2021/04/11 v1.5.2 release
-    * Corresponding to stable_baseline3 1.0
-
-* 2021/12/26 v1.6.0 release
-    * BugFix
-        * \#33 Fix Can not stop over episode in simulator.
-        * \#40 Fix vae_viewer.ipynb is failed visualize reconstruction image color.
-        * \#42 Fix Can not load trained model.
-        * \#43 Fix VAE model problems.
-    * Improvement Notebook
-        * Visualize latent space with TensorBoar Projection(VAE_CNN.ipynb)
-    * Improvement Function.
-        * Docker installation for JetBot.
-
-* 2022/03/27 v1.7.0 release
-    * BugFix
-        * \#46 In simurator crush reward fix.
-    * Improvement Function.
-        * Release auto stop function without detail document.
-    * Other
-        * VAE model is changed. VAE models are not backward compatible.
-
-* 2022/07/03 v1.7.1 relase
-    * BugFix
-        * \#47 The learning_racer.vae decoder method is outputting the distributed image incorrectly.
-        * \#38 CNN_VAE.ipynb fix.
-        * vae_viewer.ipynb fix.
-        * Can not start command for internal errors.
-    * Inprovement Function.
-        * Efficient hyperparameter in config.yml
-
-## 7. Contribution
-
-* If you find bug or want to new functions, please write issue.
-* If you fix your self, please fork and send pull request.
+* If you find bug or want new functions, please write an issue.
+* If you fix things yourself, please send a pull request.
 
 ## LICENSE
 
@@ -322,4 +185,7 @@ This software license under [MIT](https://github.com/masato-ka/airc-rl-agent/blo
 
 ## Author
 
+Updated by Carnegie Mellon Robotics Academy (https://github.com/cmroboticsacademy)
+
+Original Author:
 [masato-ka](https://github.com/masato-ka)
