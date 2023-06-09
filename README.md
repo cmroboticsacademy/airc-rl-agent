@@ -1,6 +1,9 @@
 LearningRacer-rl
 ======
 
+Note: This is a fork of **masato-ka**'s repo. We noticed it was a bit out of date, so this is an updated version. Here is the original repo link: 
+[https://github.com/masato-ka/airc-rl-agent](https://github.com/masato-ka/airc-rl-agent)
+
 Overview
 
 This software is able to self learning your AI Robocar by Deep reinforcement learning in few minutes.
