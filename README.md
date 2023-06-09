@@ -78,14 +78,10 @@ $ sudo reboot
 
 Once you run these commands, your jetbot will be rebooted. 
 
-JetBot images(JetPack>=4.4) are using docker container . Therefore, build application on docker container . allocate
-maximum memory to the container.
+JetBot images(JetPack>=4.4) are using a docker container. Therefore, you must build the application on the docker container. 
 
-You are able to use ```racer``` command inside docker container. Access to Jupyter Notebook on the
-container[http://<jetbot-ip>:8888/] and launch terminal(File->new->terminal ).
-
-You need train original VAE model. Because torch version problem. Coud you cahange
-to ```torch.save(vae.state_dict(), 'vae.torch', _use_new_zipfile_serialization=True)``` in VAE_CNN.ipynb training cell.
+You can use the ```racer``` command inside the docker container. Access it by going to the Jupyter Notebook on the
+container[http://<jetbot-ip>:8888/] and launch terminal(File->new->terminal).
 
 Sometimes Pytorch can not recognize your GPU which may be a CUDA Driver issue. For this, you need to install pytorch
 following this [link](https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-10-now-available/72048). Details can be found here: [this](https://forums.developer.nvidia.com/t/my-jetson-nano-board-returns-false-to-torch-cuda-is-available-in-local-directory/182498)
