@@ -41,6 +41,7 @@ This demo video shows that the JetBot can learn how to drive on the road in unde
 ### 3.1 Requirements
 
 * Jetbot
+* MicroSD card with at least 128GB available
 * JetPack>=4.2
 * Python=>3.6
 * pip>=19.3.1
