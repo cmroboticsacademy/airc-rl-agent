@@ -1,40 +1,37 @@
 LearningRacer-rl
 ======
 
-Note: This is a fork of **masato-ka**'s repo. We noticed it was a bit out of date, so this is an updated version. Here is the original repo link: 
+Note: This is a fork of **masato-ka**'s repo. We noticed it was a bit out of date, so this is an updated version. Also, we have only written it to be used with the JetBot. The JetRacer will require modifications to get it to work. Here is the original repo link: 
 [https://github.com/masato-ka/airc-rl-agent](https://github.com/masato-ka/airc-rl-agent)
 
 Overview
 
-This software is able to self learning your AI Robocar by Deep reinforcement learning in few minutes.
+This project allows your AI Robocar to drive on a road using Deep Reinforcement Learning. 
 
 ![demo](content/demo.gif)
 
-You can use to Real Robocar and DonkeySim [See in](#simulator).
+We have updated these instructions to work with the Jetbot.
 
 ## 1. Description
 
-Many DIY self driving car like JetBot or JetRacer, DonkeyCar are  using behavior cloning  by supervised-learning.
-The method need much labeled data that is collected by human demonstration.  Human driving techniques is very important in this case.
+Many DIY self driving cars like JetBot / JetRacer and DonkeyCar are using behavior cloning by supervised-learning.
+The method needs a large amount of labeled data that must be collected by a human. 
 
-On the other hands, In this software using deep reinforcement learning (DRL). 
-That is can earned running behavior automatically through interaction with environment. Do not need sample data that is human labelling.
+In this project, we are using Deep Reinforcement Learning (DRL). That is, the robot can learn the proper driving behavior automatically through giving rewards when interacting with the environment. It does not require sampling and labeling data.
 
-In addition this software agent can run on the Jetson Nano. Why can run on Jetson Nano and short learning time? because using integrate of SAC[soft actor critic] and VAE. SAC is a state of the art off-policy reinforcement learning method.
-In addition VAE train on cloud server beforehand as CNN layer of SAC.(This method called state representation learning) .
+In addition, this can run on the Jetson Nano - and is relatively efficient at doing so. How? Well, the Jetson Nano allows this to integrate with Soft Actor Critic (SAC) and VAE. SAC is the state-of-the-art off-policy reinforcement learning method. 
 
-
-* This method devised by Antonin RAFFIN
+* This method was devised from Antonin RAFFIN's work
     * [Arrafine's Medium blog post](https://towardsdatascience.com/learning-to-drive-smoothly-in-minutes-450a7cdb35f4)
     * [Arrafine's implementsation for Simulator](https://github.com/araffin/learning-to-drive-in-5-minutes)
 
 
-* Detail of SAC here:
+* Detail of SAC can be found here:
     * [Google AI blog Soft Actor-Critic: Deep Reinforcement Learning for Robotics](https://ai.googleblog.com/2019/01/soft-actor-critic-deep-reinforcement.html)
 
 ## 2. Demo
 
-This demo video showed that JetBot can earned policy of running road under 30 minutes. Only using Jetson Nano. 
+This demo video shows that the JetBot can learn how to drive on the road in under 30 minutes using only Jetson Nano. 
 
 [![](https://img.youtube.com/vi/j8rSWvcO-s4/0.jpg)](https://www.youtube.com/watch?v=j8rSWvcO-s4)
 
@@ -43,12 +40,11 @@ This demo video showed that JetBot can earned policy of running road under 30 mi
 
 ### 3.1 Requirements
 
-* Jetbot or JetRacer
+* Jetbot
 * JetPack>=4.2
 * Python=>3.6
 * pip>=19.3.1
 * pytorch>=1.8.0
-
 * Windows, macOS or Ubuntu (DonkeySim only)
 * x86-64 arch
 * Python>=3.6
@@ -59,33 +55,28 @@ This demo video showed that JetBot can earned policy of running road under 30 mi
 
 ### 3.2 Install
 
-* JetBot
+#### If you are using the JetBot (only option currently)
 
 Set up JetBot using the following SDCard image.
 [https://jetbot.org/v0.4.3/software_setup/sd_card.html]
 
-Checking your JetBot Environment. Please write down JETBOT_VERSION and L4T_VERSION.
+Begin by setting up LearningRacer using the Docker container image. You will first need to SSH into your jetbot. You can do this directly in Jupyter Notebooks by doing the following:
 
 ```
-#JETBOT_VERSION
-$ sudo docker images jetbot/jetbot | grep jupyter | cut -f 8 -d ' ' | cut -f 2 -d '-'
-
-#L4T_VERSION
-$ sudo docker images jetbot/jetbot | grep jupyter | cut -f 8 -d ' ' | cut -f 3 -d '-'
+$ ssh jetbot@localhost
+```
+This allows you to run commands as if you're not logged in as the jetbot user. You can always plug a monitor and a keyboard directly into your Jetbot instead. Next, clone the repo:
 
 ```
-
-And Setup LearningRacer for Docker container image.
-
-```
-$ cd ~/ && git clone https://github.com/masato-ka/airc-rl-agent.git
+$ cd ~/ && git clone https://github.com/cmroboticsacademy/airc-rl-agent
 $ cd airc-rl-agent/docker/jetbot && sh build.sh
 $ sh enable.sh /home/jetbot
 
-# disable jetbot/jetbot container. Tag name modify for your system by JETBOT_VERSION and L4T_VERSION.
 $ sudo docker update --restart=no jetbot_jupyter
-$ sudo restart
+$ sudo reboot
 ```
+
+Once you run these commands, your jetbot will be rebooted. 
 
 JetBot images(JetPack>=4.4) are using docker container . Therefore, build application on docker container . allocate
 maximum memory to the container.
@@ -96,79 +87,40 @@ container[http://<jetbot-ip>:8888/] and launch terminal(File->new->terminal ).
 You need train original VAE model. Because torch version problem. Coud you cahange
 to ```torch.save(vae.state_dict(), 'vae.torch', _use_new_zipfile_serialization=True)``` in VAE_CNN.ipynb training cell.
 
-* JetRacer.
+Sometimes Pytorch can not recognize your GPU which may be a CUDA Driver issue. For this, you need to install pytorch
+following this [link](https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-10-now-available/72048). Details can be found here: [this](https://forums.developer.nvidia.com/t/my-jetson-nano-board-returns-false-to-torch-cuda-is-available-in-local-directory/182498)
 
-Firstly setup your jetracer software to JetPack 4.5.1 following
-this [link](https://github.com/NVIDIA-AI-IOT/jetracer/blob/master/docs/software_setup.md). Then run below command on
-your jetracer terminal.
-
-```
-$ cd ~/ && git clone https://github.com/masato-ka/airc-rl-agent.git
-$ cd airc-rl-agent
-$ sh install_jetpack.sh
-```
-
-Some time pytorch can not recognize your GPU by CUDA Driver problem. In this situation, you need to install pytorch
-following this [link](https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-10-now-available/72048). Detail
-see
-in [this](https://forums.developer.nvidia.com/t/my-jetson-nano-board-returns-false-to-torch-cuda-is-available-in-local-directory/182498)
-
-* Other platform(DonkeySIM only).
-
-```
-$ cd ~/ && git clone https://github.com/masato-ka/airc-rl-agent.git
-$ cd airc-rl-agent
-$ sudo pip3 install .\[choose platform\]
-```
-
-* You can choose platform from here
-    * windows
-    * windows-gpu
-    * osx
-    * ubuntu
-
-
-When complete install please check run command.
+When you've finished the above, you can confirm your install by running the following command.
 
 ```shell
 $ racer --version
-learning_racer version 1.5.0 .
+learning_racer version 1.5.0.
 ```
+** Note that your version might be different
 
 ## 4. Usage
 
-### 4.1 JetBot and JetRacer
+### 4.1 JetBot
 
 #### Create VAE Model
 
-1. Collect 1k to 10 k images from your car camera using ```data_collection.ipynb```
-   or ```data_collection_without_gamepad.ipynb```in ```notebook/utility/jetbot```. If you use on JetRacer,
-   use```notebook/utility/jetracer/data_collection.ipynb``` .
-2. Learning VAE using ```VAE CNN.ipynb``` on Google Colaboratory.
-3. Download vae.torch from host machine and deploy to root directory.
-
-When your robot is Jetbot, Coud you modify VAE_CNN.ipynb.
-
-* final line trainng cell, Please change to True.
-  '''
-  torch.save(vae.state_dict(), 'vae.torch', _use_new_zipfile_serialization=True)
-  '''
+1. Collect 1k to 10k images from your car camera using ```data_collection.ipynb```
+   or ```data_collection_without_gamepad.ipynb```localted in ```airc-rl-agent/notebooks/utility/jetbot```.
+2. Create your VAE using ```VAE_CNN.ipynb``` located in ```airc-rl-agent/notebooks/colabo```. It is going to create a vae.torch file in this directory.
 
 #### Check and Evaluation
 
 **A.Offline check**
 
-When you run VAE_CNN.ipynb, you can check projection of latent spaces on TensorBoard Projection Tab. This latent spaces
-are labeled by K-means. If similar images stick together, it indicate to that good latent spaces.
+NOTE: I (Vu) could not get this part to work. Skip if you want. 
+
+When you run VAE_CNN.ipynb, you can check the projection of the latent spaces on TensorBoard Projection Tab. These latent spaces are labeled by K-means. If similar images stick together, it indicates that they are good.
 
 ![tensorboard-projection](content/vae/tensorboard-projection.png)
 
 **B.Online check**
 
-Run ```notebooks/util/jetbot_vae_viewer.ipynb``` and Check reconstruction image. Check that the image is reconstructed
-at several places on the course.
-
-If you use on JetRacer, Using ```jetracer_vae_viewer.ipynb``` .
+Run ```notebooks/util/jetbot_vae_viewer.ipynb``` and check the reconstruction image. Check that the image is reconstructed at several places on the course.
 
 * Left is an actual image. Right is reconstruction image.
 * Color bar is represented latent variable of VAE(z=32 dim).
@@ -178,25 +130,24 @@ If you use on JetRacer, Using ```jetracer_vae_viewer.ipynb``` .
 
 #### Start learning
 
-1. Run user_interface.ipynb (needs gamepad).
-If you not have gamepad, use ```user_interface_without_gamepad.ipynb```
-2. Run train.py
-
-```shell
-$ racer train -robot jetbot
-# If you use on JetRacer, "-robot jetracer". default is jetbot.
+1. Run ```user_interface.ipynb``` (this one needs a gamepad). If you not have gamepad, use ```user_interface_without_gamepad.ipynb```
+2. Go into a terminal on your Jetbot and run the following: 
+```
+$ cd /airc-rl-agent/ && racer train -robot jetbot -vae notebooks/colabo/vae.torch
 ```
 
-After few minutes, the AI car starts running. Please push STOP button immediately before the course out. 
+After few minutes, you will see the Toggle Button in ```user_interface_without_gamepad.ipynb``` (we only used the one without the gamepad) say that it is Valid, meaning that it's ready to start. 
+
+When you press Start, the robot will run. If it starts to veer off course, hit the button again to Stop. Wait until the word says "Valid" again with a checkmark before pressing Start again. Repeat this to train your robot on the course. 
 Then, after `` `RESET``` is displayed at the prompt, press the START button. Repeat this.
-
-![learning](content/learning.gif)
-
-When you use without_gamepad, you can check status using Validation box.
 
 |Can run                          | Waiting learning                       |
 |:-------------------------------:|:--------------------------------------:|
 |![can_run](content/status_ok.png)|![waiting_learn](content/status_ng.png) |
+
+The terminal should look similar to this as you start and stop the robot.
+
+![learning](content/learning.gif)
 
 * racer train command options
 
@@ -222,54 +173,6 @@ When only inference, run below command, The script load VAE model and RL model a
 ```shell
 $ racer demo -robot jetbot
 ``` 
-
-* racer demo command options
-
-|Name           | description            |Default                |
-|:--------------|:-----------------------|:----------------------|
-|-config(--config-path)| Specify the file path of config.yml.    | config.yml             |
-|-vae(--vae-path)| Specify the file path of the trained VAE model.    | vae.torch             |
-|-model(--model-path|Specify the file to load the trained reinforcement learning model.|model|
-|-device(--device)|Specifies whether Pytorch uses CUDA. Set 'cuda' to use. Set 'cpu' when using CPU.| cuda                 |
-|-robot(--robot-driver)| Specify the type of car to use. JetBot and JetRacer can be specified.| JetBot              |
-|-steps(--time-steps)| Specify the maximum step for demo. Modify the values ​​according to the size and complexity of the course.| 5000 |
-|-tblog(--tb-log)|Define logging directory name, If not set, Do not logging.|None|
-
-In below command, run the demo 1000 steps with model file name is model.
-
-```shell
-$ racer demo -robot jetbot -steps 1000 -model model
-```
-
-### <a name="simulator"></a> 4.1 Simulator
-
-#### Download VAE model.
-
-You can get pre-trained VAE model. from [here](https://drive.google.com/open?id=19r1yuwiRGGV-BjzjoCzwX8zmA8ZKFNcC)
-
-```shell
-$wget "https://drive.google.com/uc?export=download&id=19r1yuwiRGGV-BjzjoCzwX8zmA8ZKFNcC" -O vae.torch
-```
-
-#### Start learning
-
-```shell
-$ racer train -robot sim -vae <downloaded vae model path> -device cpu -host <DonkeySim IP>
-```
-
-* racer train options
-
-|Name           | description            |Default                |
-|:--------------|:-----------------------|:----------------------|
-|-config(--config-path)| Specify the file path of config.yml.    | config.yml             |
-|-vae(--vae-path)| Specify the file path of the trained VAE model.    | vae.torch             |
-|-device(--device)|Specifies whether Pytorch uses CUDA. Set 'cuda' to use. Set 'cpu' when using CPU.| cuda                 |
-|-robot(--robot-driver)| Specify the type of car to use. JetBot and JetRacer can be specified.| JetBot              |
-|-steps(--time-steps)| Specify the maximum learning step for reinforcement learning. Modify the values ​​according to the size and complexity of the course.| 5000 |
-|-save_freq(--save_freq_episode) |Specify how many steps to save the policy model. The policy starts saving after the gradient calculation starts.| 10|
-|-save_path(--save-model-path)| Specify the path for saved model file.|model_log|
-|-s(--save)    | Specify the path and file name to save the model file of the training result.  | model                 |
-|-l(--load-model)|Define pre-train model path.|-|
 
 #### Start Demo
 
